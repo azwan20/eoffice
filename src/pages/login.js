@@ -47,10 +47,11 @@ export default function Login() {
       router.push("/");
     } catch (err) {
       console.error("LOGIN ERROR:", err);
-      if (err.code === "auth/invalid-email") setError("Format NIP tidak valid");
-      else if (err.code === "auth/user-not-found") setError("User tidak ditemukan");
-      else if (err.code === "auth/wrong-password") setError("Password salah");
-      else setError("Terjadi kesalahan saat login");
+      if (err.code === "auth/invalid-email") setError("Format NIP/Email tidak valid");
+      else if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+        setError("NIP atau Password yang Anda masukkan salah.");
+      }
+      else setError("Terjadi kesalahan saat login. Periksa koneksi Anda.");
     }
     setLoading(false);
   };

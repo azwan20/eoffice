@@ -23,6 +23,7 @@ export default function MasterTemplate() {
         ket: "", // Kode (e.g. S-JALAN)
         nama: "", // Nama Surat (e.g. Surat Jalan)
         unit: "all", // all or specific unit
+        format_nomor: "", // Format nomor otomatis
         formFields: [
             { name: "no_surat", label: "Nomor Surat", type: "text" },
             { name: "tanggal_surat", label: "Tanggal Surat", type: "date" },
@@ -64,6 +65,7 @@ export default function MasterTemplate() {
                 ket: t.ket || "",
                 nama: t.nama || "",
                 unit: t.unit || "all",
+                format_nomor: t.format_nomor || "",
                 formFields: t.formFields || emptyForm.formFields,
                 layoutHtml: t.layoutHtml || ""
             });
@@ -110,6 +112,7 @@ export default function MasterTemplate() {
                 ket: form.ket.toUpperCase(),
                 nama: form.nama,
                 unit: form.unit.toLowerCase(),
+                format_nomor: form.format_nomor || "",
                 formFields: form.formFields,
                 layoutHtml: form.layoutHtml,
                 updatedAt: serverTimestamp()
@@ -254,6 +257,13 @@ export default function MasterTemplate() {
                                                 <option value="all">Semua Unit (Umum)</option>
                                                 {ALL_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                                             </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Format Nomor Otomatis <span className="text-gray-400 font-normal">(Opsional)</span></label>
+                                            <input type="text" value={form.format_nomor} onChange={(e) => setForm({ ...form, format_nomor: e.target.value })}
+                                                placeholder="Cth: {{INPUT}}/RSUD/{{ROMAWI}}/{{TAHUN}}"
+                                                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary outline-none transition-all" />
+                                            <p className="text-[10px] text-gray-400 mt-1">Variabel: {'{{INPUT}}'}, {'{{NOMOR}}'}, {'{{ROMAWI}}'}, {'{{BULAN}}'}, {'{{TAHUN}}'}</p>
                                         </div>
                                     </div>
                                 </div>

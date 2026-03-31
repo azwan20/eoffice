@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { db } from "@/lib/firebaseConfig";
 import React, { useEffect, useState } from "react";
-import { getDocs, getDoc, collection, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, orderBy, query, where, onSnapshot } from "firebase/firestore";
+import { getDocs, getDoc, collection, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, orderBy, query, where, onSnapshot, runTransaction } from "firebase/firestore";
 import Layout from "@/components/Layout";
 import SuccessDialog from "@/components/SuccessDialog";
 import { canCRUD, isDirektur, ALL_UNITS, isFullAccess } from "@/lib/roleUtils";
@@ -79,6 +79,9 @@ export default function BuatSurat() {
         hasil_narkoba: '', kepentingan_surat: '', amp: '', thc: '', mop: '',
     });
     const [loadingSave, setLoadingSave] = useState(false);
+    const [useAutoNumber, setUseAutoNumber] = useState(false);
+
+
     const [selectedSurat, setSelectedSurat] = useState(null);
     const [openSuccess, setOpenSuccess] = useState(false);
     const [message, setMessage] = useState("");
@@ -122,6 +125,14 @@ export default function BuatSurat() {
     const config = dynamicTpl 
         ? { title: dynamicTpl.nama, fields: ["direktur", "pimpinan"] }
         : formConfig[ket];
+
+    useEffect(() => {
+        if (!editId && dynamicTpl?.format_nomor) {
+            setUseAutoNumber(true);
+        } else {
+            setUseAutoNumber(false);
+        }
+    }, [dynamicTpl, editId]);
 
     useEffect(() => {
         if (!docId) return;
@@ -197,6 +208,57 @@ export default function BuatSurat() {
         setLoadingSave(true);
         try {
             const finalData = getFinalData();
+            
+            // Validasi kelengkapan data form
+            const emptyFields = Object.keys(finalData).filter(key => {
+                // Abaikan pengecekan no_surat jika disetel otomatis (sebab akan digenerate di bawah)
+                if (key === 'no_surat' && useAutoNumber && !editId) return false;
+                // Lampiran biasanya opsional
+                if (key === 'lampiran_surat') return false; 
+                
+                const val = finalData[key];
+                return val === undefined || val === null || String(val).trim() === "";
+            });
+
+            if (emptyFields.length > 0) {
+                setMessage("Lengkapi form yang kosong");
+                setOpenSuccess(true);
+                setRedirectPath(""); 
+                setLoadingSave(false);
+                return;
+            }
+            
+            // Logika Penomoran Surat Otomatis menggunakan Transaksi Firestore
+            if (useAutoNumber && !editId && dynamicTpl?.format_nomor) {
+                // Gunakan tanggal dari form jika ada, jika tidak gunakan waktu hari ini
+                const refDate = formFields.tanggal_surat ? new Date(formFields.tanggal_surat) : new Date();
+                const year = refDate.getFullYear();
+                const month = refDate.getMonth() + 1;
+                const counterId = `${year}_${ket}`;
+                
+                const newNoSurat = await runTransaction(db, async (transaction) => {
+                    const counterRef = doc(db, "counters_surat", counterId);
+                    const counterDoc = await transaction.get(counterRef);
+                    let seq = 1;
+                    if (counterDoc.exists()) {
+                        seq = counterDoc.data().seq + 1;
+                    }
+                    transaction.set(counterRef, { seq, year, ket, updatedAt: serverTimestamp() }, { merge: true });
+                    
+                    const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+                    
+                    let format = dynamicTpl.format_nomor;
+                    format = format.replace(/\{\{NOMOR\}\}/g, seq);
+                    format = format.replace(/\{\{TAHUN\}\}/g, year);
+                    format = format.replace(/\{\{BULAN\}\}/g, month);
+                    format = format.replace(/\{\{ROMAWI\}\}/g, roman[month]);
+                    format = format.replace(/\{\{INPUT\}\}/g, formFields.no_surat || "___");
+                    
+                    return format;
+                });
+                finalData.no_surat = newNoSurat;
+            }
+
             if (editId) {
                 await updateDoc(doc(db, "surat", editId), { ...finalData, updatedAt: serverTimestamp() });
                 setMessage("Data Berhasil Diperbarui");
@@ -274,11 +336,54 @@ export default function BuatSurat() {
     const renderField = (fieldKey) => {
         const field = FIELD_MASTER[fieldKey];
         if (!field) return null;
+        
+        if (fieldKey === 'no_surat' && dynamicTpl?.format_nomor && !editId) {
+            const hasInputTag = dynamicTpl.format_nomor.includes('{{INPUT}}');
+            
+            // Generate live preview string
+            let previewValue = dynamicTpl.format_nomor;
+            const refDatePreview = formFields.tanggal_surat ? new Date(formFields.tanggal_surat) : new Date();
+            const yearPrev = refDatePreview.getFullYear();
+            const monthPrev = refDatePreview.getMonth() + 1;
+            const romanPreview = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+            
+            previewValue = previewValue.replace(/\{\{NOMOR\}\}/g, "(Oto)");
+            previewValue = previewValue.replace(/\{\{TAHUN\}\}/g, yearPrev);
+            previewValue = previewValue.replace(/\{\{BULAN\}\}/g, monthPrev);
+            previewValue = previewValue.replace(/\{\{ROMAWI\}\}/g, romanPreview[monthPrev] || "-");
+            previewValue = previewValue.replace(/\{\{INPUT\}\}/g, formFields[fieldKey] || "___");
+            
+            return (
+                <div key={fieldKey}>
+                    <div className="flex justify-between items-end mb-1">
+                        <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+                        <label className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded cursor-pointer select-none">
+                            <input type="checkbox" checked={!useAutoNumber} onChange={(e) => setUseAutoNumber(!e.target.checked)} className="rounded text-blue-600 border-blue-300 w-3 h-3" />
+                            Isi Manual Mutlak
+                        </label>
+                    </div>
+                    {useAutoNumber ? (
+                        <div className="space-y-1">
+                            {hasInputTag && (
+                                <input type="text" value={formFields[fieldKey] || ''} onChange={(e) => handleFieldChange(fieldKey, e.target.value)} className={inputClasses} placeholder="Ketik kode unik nomor (Bagian Depan)..." required />
+                            )}
+                            <div className="px-3 py-2 bg-gray-50 text-gray-400 italic font-mono text-xs rounded-lg border border-gray-100 flex gap-2">
+                                <span>Preview saat disimpan:</span>
+                                <span className="font-bold text-gray-600">{previewValue}</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <input type="text" value={formFields[fieldKey] || ''} onChange={(e) => handleFieldChange(fieldKey, e.target.value)} className={inputClasses} placeholder="Ketik nomor surat manual selengkapnya..." required />
+                    )}
+                </div>
+            );
+        }
+
         switch (field.type) {
             case "text": return (
                 <div key={fieldKey}>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
-                    <input type="text" value={formFields[fieldKey]} onChange={(e) => handleFieldChange(fieldKey, e.target.value)} className={inputClasses} />
+                    <input type="text" value={formFields[fieldKey] || ''} onChange={(e) => handleFieldChange(fieldKey, e.target.value)} className={inputClasses} />
                 </div>
             );
             case "textarea": return (

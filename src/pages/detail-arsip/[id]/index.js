@@ -45,17 +45,17 @@ export default function DetailArsip() {
         "umum", "yanmas", "keuangan", "pelayanan medik",
         "penunjang medik", "keperawatan", "laboratorium"
     ].map(u => {
-        const namas = [{ nama: "Surat Umum / Custom", ket: "SU", path: "surat-umum" }];
+        const namas = [];
         if (u === "laboratorium") namas.unshift({ nama: "Surat Keterangan Bebas Narkoba", ket: "SKBN", path: "surat-keterangan-bebas-narkoba" });
         if (u === "yanmas") namas.unshift({ nama: "Surat Permohonan", ket: "SPY", path: "surat-permohonan" });
-        
+
         // Inject dynamic templates
         dynamicTemplates.forEach(t => {
             if (t.unit === "all" || t.unit === u) {
                 namas.push({ nama: t.nama, ket: t.ket, path: "surat-dinamis" });
             }
         });
-        
+
         return { unit: u, namas };
     });
 
@@ -141,11 +141,11 @@ export default function DetailArsip() {
         // First try current page's unit paths for specific unit templates
         const localPath = getPathByKet(surat.ket);
         if (localPath) return `/${id.toLowerCase()}/${localPath}`;
-        
+
         // Fallback: use global lookup with origin unit's path
         const global = ALL_SURAT_TYPES[surat.ket];
         if (global) return `/${global.unitPath}/${global.path}`;
-        
+
         return null;
     };
 
@@ -211,16 +211,15 @@ export default function DetailArsip() {
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                                                        tdata.status_approval === "approved" ? "bg-green-100 text-green-700" :
-                                                        tdata.status_approval === "rejected" ? "bg-red-100 text-red-700" :
-                                                        "bg-amber-100 text-amber-700"
-                                                    }`}>
+                                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${tdata.status_approval === "approved" ? "bg-green-100 text-green-700" :
+                                                            tdata.status_approval === "rejected" ? "bg-red-100 text-red-700" :
+                                                                "bg-amber-100 text-amber-700"
+                                                        }`}>
                                                         {tdata.status_approval === "approved" ? "Disetujui" :
-                                                         tdata.status_approval === "rejected" ? "Ditolak" : 
-                                                         (tdata.id_kabag && !tdata.ttd_kabag && tdata.id_dokter && !tdata.ttd_dokter) ? "Pending (Kabag & Dir)" :
-                                                         (tdata.id_kabag && !tdata.ttd_kabag) ? "Pending (Kabag)" :
-                                                         (tdata.id_dokter && !tdata.ttd_dokter) ? "Pending (Dokter)" : "Pending"}
+                                                            tdata.status_approval === "rejected" ? "Ditolak" :
+                                                                (tdata.id_kabag && !tdata.ttd_kabag && tdata.id_dokter && !tdata.ttd_dokter) ? "Pending (Kabag & Dir)" :
+                                                                    (tdata.id_kabag && !tdata.ttd_kabag) ? "Pending (Kabag)" :
+                                                                        (tdata.id_dokter && !tdata.ttd_dokter) ? "Pending (Dokter)" : "Pending"}
                                                     </span>
                                                     {isIncoming && (
                                                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
