@@ -112,7 +112,7 @@ export default function Arsip() {
     return (
         <>
             <div className="sekretaris homeSekretaris d-flex">
-                <SekretarisAside activeMenu={activeMenu} handleButtonClick={handleButtonClick} />
+                {/* <SekretarisAside activeMenu={activeMenu} handleButtonClick={handleButtonClick} /> */}
                 <article style={{ maxHeight: '100vh', overflowY: 'auto' }}>
                     <div className="konten align-items-center">
                         <h5 className="text-start text-second fw-bold">Arsip Surat RSUD DAYA KOTA MAKASSAR</h5>

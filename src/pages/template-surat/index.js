@@ -233,7 +233,7 @@ export default function BuatSuart() {
     return (
         <>
             <div className="d-flex buatSurat">
-                <SekretarisAside isHomeActive={isHomeActive} isMasukActive={isMasukActive} isKeluarActive={isKeluarActive} handleButtonClick={handleButtonClick} />
+                {/* <SekretarisAside isHomeActive={isHomeActive} isMasukActive={isMasukActive} isKeluarActive={isKeluarActive} handleButtonClick={handleButtonClick} /> */}
                 <article style={{ height: '100vh', overflowY: 'auto' }}>
                     {visibleSku && (
                         <div className="p-3">
