@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   PRINT / TEMPLATE STYLES (untuk cetak surat)
+   ============================================ */
+.template {
+  font-family: "Times New Roman", Times, serif;
+}
+
+@media print {
+  .template {
+    margin: 0;
+    width: 8.5in;
+    height: 12in;
+    margin: auto;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .print-button {
+    display: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  template .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+  }
+
+  template .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+}
+
+.template .page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+.template h1,
+.template h4,
+.template h5,
+.template h6 {
+  text-align: center;
+  font-size: 20px;
+  margin: 0;
+}
+
+.template .header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.template .header p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.template .hr1 {
+  border: 2px solid black;
+  height: 4px;
+  width: 100%;
+  background: #000;
+  margin: 0;
+}
+
+.template .hr2 {
+  border: 0.3px solid #333;
+  height: 0.3px;
+  width: 100%;
+  background: #333;
+  margin: 0;
+}
+
+.template .footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  height: 200px;
+  margin-top: 0px;
+}
+
+.template .pembuka,
+.template .penutup {
+  text-align: justify;
+}
+
+.template p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.template .footer p {
+  margin: 0;
+  text-align: center;
+}
+
+.template .footer span {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.template .footer .names p {
+  text-align: left;
+  padding-left: 20px;
+}
+
+.template .title {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 15px auto;
+}
+
+.template .print-button {
+  border: none;
+  margin: 0 10px;
+  font-weight: 500;
+  padding: 5px 15px;
+  border-radius: 5px;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 3%;
+  background-color: rgb(101, 208, 101);
+  z-index: 999;
+}
+
+.template .namaUpper {
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+.template table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.template table th,
+.template table td {
+  border: 1px solid black;
+  font-size: 12px;
+  color: #000;
+  padding: 4px 10px;
+}
+
+.template table thead th {
+  background-color: rgb(213, 210, 210);
+  padding: 12px 0px;
+  text-align: center;
+}
+
+.template .text-second {
+  color: #900000;
+}
+
+.template .d-flex { display: flex; }
+.template .justify-content-center { justify-content: center; }
+.template .align-items-center { align-items: center; }
+.template .text-center { text-align: center; }
+.template .text-end { text-align: end; }
+.template .text-uppercase { text-transform: uppercase; }
+.template .text-start { text-align: start; }
+.template .mb-2 { margin-bottom: 0.5rem; }
+.template .mb-4 { margin-bottom: 1.5rem; }
+.template .mt-5 { margin-top: 3rem; }
+.template .my-3 { margin-top: 1rem; margin-bottom: 1rem; }
+.template .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.template .px-5 { padding-left: 3rem; padding-right: 3rem; }
+.template .ps-5 { padding-left: 3rem; }
+.template .pe-5 { padding-right: 3rem; }
+.template .py-5 { padding-top: 3rem; padding-bottom: 3rem; }
+.template .me-2 { margin-right: 0.5rem; }
+.template .ms-2 { margin-left: 0.5rem; }
+.template .w-25 { width: 25%; }
+.template .fw-bold, .template strong, .template b { font-weight: bold; }
+
+/* ============================================
+   CUSTOM UTILITY CLASSES
+   ============================================ */
+@layer components {
+  .skeleton-card {
+    @apply h-24 rounded-xl;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
