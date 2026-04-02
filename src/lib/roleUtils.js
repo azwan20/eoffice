@@ -25,20 +25,20 @@ export const ALL_UNITS = [
  * Extract the unit from user data.
  * Priority: unit_kerja field > parsing jabatan_user (backward-compatible)
  */
-export function getUserUnit(jabatan) {
+export function getUserUnit(jabatan, unitKerja) {
     // Priority 1: use unit_kerja if available
-    // if (unitKerja) {
-    //     const uk = unitKerja.toLowerCase().trim();
-    //     if (uk && uk !== "direktur") return uk;
-    //     if (uk === "direktur") return null;
-    // }
+    if (unitKerja) {
+        const uk = unitKerja.toLowerCase().trim();
+        if (uk && uk !== "direktur") return uk;
+        if (uk === "direktur") return null;
+    }
 
     // Priority 2: fallback to parsing jabatan (backward-compatible)
     if (!jabatan) return null;
     const j = jabatan.toLowerCase().trim();
     if (j === "direktur" || j === "admin") return null;
-    const cleaned = j.replace(/^(pegawai|kabag|dokter)\s+/, "");
-    const match = ALL_UNITS.find(u => cleaned === u);
+    const cleaned = j.replace(/^(pegawai|kabag|dokter|kepala bagian)\s+/, "");
+    const match = ALL_UNITS.find(u => cleaned.includes(u));
     return match || cleaned || null;
 }
 
@@ -51,7 +51,7 @@ export function getUserRole(jabatan) {
     const j = jabatan.toLowerCase().trim();
     if (j.includes("direktur")) return "direktur";
     if (j.includes("admin")) return "admin";
-    if (j.includes("kabag")) return "kabag";
+    if (j.includes("kabag") || j.includes("kepala bagian") || j.includes("kepala")) return "kabag";
     if (j.includes("dokter")) return "dokter";
     return "pegawai";
 }

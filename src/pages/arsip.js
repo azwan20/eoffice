@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
 import TabelArsip from "@/components/TableArsip";
 import SuccessDialog from "@/components/SuccessDialog";
+import { Card } from "@mui/material";
 
 
 export default function Arsip() {
@@ -315,19 +316,18 @@ export default function Arsip() {
         <Layout>
             <div>
                 <div className="mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-800">Arsip Surat</h1>
-                            <p className="text-sm text-gray-500 mt-1">Sistem pengelolaan surat berbasis digital</p>
+                    <div className="py-2 pt-4">
+                        <div className="d-flex align-items-center justify-content-between px-3 py-0">
+                            <div>
+                                <h5 className="text-start text-second fw-bold">Arsip Surat RSUD DAYA KOTA MAKASSAR</h5>
+                                <p className="text-grey mb-0">Sistem pengelolaan surat berbasis digital </p>
+                            </div>
+                            <button onClick={handleShow} className="btn-second m-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill m-0 p-0 me-2" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                                </svg>
+                                Buat Baru</button>
                         </div>
-                        <button onClick={handleShow}
-                            className="px-5 py-2.5 bg-gradient-to-r from-primary to-emerald-500 text-white rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Buat Baru
-                        </button>
-                    </div>
 
                         {show && (
                             <div
@@ -896,7 +896,10 @@ export default function Arsip() {
                         )}
                     </div>
 
+
+
                     <TabelArsip dataSurat={dataSurat} onEdit={handleEdit} onDelete={handleDelete} setOpenSuccess={setOpenSuccess} />
+                </div>
             </div>
 
             <SuccessDialog open={openSuccess} message={message} setOpenSuccess={setOpenSuccess} setShow={setShow} />

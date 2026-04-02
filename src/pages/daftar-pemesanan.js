@@ -57,18 +57,6 @@ export default function Template() {
         });
     }
 
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-
-        if (!user) {
-            router.push("/"); // belum login
-            return;
-        }
-
-        if (user.role !== "admin") {
-            router.push("/"); // bukan admin, redirect ke home
-        }
-    }, [router]);
 
     return (
         <>

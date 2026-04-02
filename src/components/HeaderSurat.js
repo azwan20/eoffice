@@ -23,8 +23,8 @@ export default function HeaderSurat({ logos }) {
                     )}
                 </section>
                 <section className="ms-2">
-                    <img className="h-[100px] w-auto object-contain"
-                        src="/logo-rs.jpeg" />
+                    {/* <img className="h-[100px] w-auto object-contain"
+                        src="/logo-rs.jpeg" /> */}
                 </section>
             </div>
             <div style={{ marginBottom: '2px' }} className="hr2" />

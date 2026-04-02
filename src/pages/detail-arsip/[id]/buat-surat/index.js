@@ -7,15 +7,6 @@ import Layout from "@/components/Layout";
 import SuccessDialog from "@/components/SuccessDialog";
 import { canCRUD, isDirektur, ALL_UNITS, isFullAccess } from "@/lib/roleUtils";
 
-async function fetchData_ModelTransaksi(id) {
-    const docRef = doc(db, "surat", id);
-    const docSnapshot = await getDoc(docRef);
-    if (docSnapshot.exists()) {
-        return [{ id: docSnapshot.id, ...docSnapshot.data() }];
-    }
-    return [];
-}
-
 function Pasiens({ formFields, handleFieldChange }) {
     return (
         <div className="space-y-4">
@@ -215,6 +206,7 @@ export default function BuatSurat() {
                 if (key === 'no_surat' && useAutoNumber && !editId) return false;
                 // Lampiran biasanya opsional
                 if (key === 'lampiran_surat') return false; 
+                if (key === 'id_dokter' || key === 'id_kabag') return false;
                 
                 const val = finalData[key];
                 return val === undefined || val === null || String(val).trim() === "";

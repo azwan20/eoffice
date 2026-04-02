@@ -133,8 +133,8 @@ export default function Sidebar() {
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-white font-bold text-sm">RSUD DAYA</h2>
-                            <p className="text-gray-400 text-xs">Kota Makassar</p>
+                            <h2 className="text-white font-bold text-sm">SIDARA</h2>
+                            <p className="text-gray-400 text-xs">Sistem Digital Administrasi Rumah Sakit</p>
                         </div>
                     </div>
                 </div>
