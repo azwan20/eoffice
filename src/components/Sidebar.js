@@ -127,14 +127,14 @@ export default function Sidebar() {
                 {/* Logo area */}
                 <div className="px-6 py-8 border-b border-white/10">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
+                        <div className="w-12 h-12 bg-white rounded-xl shadow-lg shadow-white/5 flex flex-shrink-0 items-center justify-center overflow-hidden">
+                            <img src="/logo-rs.jpeg" alt="Logo RS" className="w-full h-full object-contain p-1" />
                         </div>
-                        <div>
-                            <h2 className="text-white font-bold text-sm">SIDARA</h2>
-                            <p className="text-gray-400 text-xs">Sistem Digital Administrasi Rumah Sakit</p>
+                        <div className="flex flex-col">
+                            <h2 className="text-white font-bold text-base tracking-wide">SIDARA</h2>
+                            <p className="text-gray-400 text-[10px] uppercase font-medium mt-0.5 leading-tight line-clamp-2">
+                                Sistem Digital Administrasi<br />Rumah Sakit
+                            </p>
                         </div>
                     </div>
                 </div>
