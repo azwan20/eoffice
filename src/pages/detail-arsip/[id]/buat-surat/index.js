@@ -100,6 +100,12 @@ export default function BuatSurat() {
         SPY: ["no_surat", "tanggal_surat", "lampiran_surat", "perihal_surat", "isi_surat"],
         SU: ["no_surat", "tanggal_surat", "kepada_surat", "perihal_surat", "isi_surat_custom"]
     };
+    // Default format nomor otomatis untuk tipe surat hardcoded
+    const HARDCODED_FORMAT = {
+        SKBN: "{{NOMOR}}/SKBN/RSUD/{{ROMAWI}}/{{TAHUN}}",
+        SPY: "{{NOMOR}}/SPY/RSUD/{{ROMAWI}}/{{TAHUN}}",
+        SU: "{{NOMOR}}/SU/RSUD/{{ROMAWI}}/{{TAHUN}}",
+    };
     const formConfig = {
         SKBN: { title: "Surat Keterangan Bebas Narkoba", fields: ["direktur", "pasien", "alamat", "hasil_lab"] },
         SPY: { title: "Surat Pemberian Izin", fields: ["direktur", "pimpinan", "alamat"] },
@@ -108,6 +114,9 @@ export default function BuatSurat() {
     const [dynamicTemplates, setDynamicTemplates] = useState([]);
 
     const dynamicTpl = dynamicTemplates.find(t => t.ket === ket);
+
+    // Resolve format_nomor: dari dynamic template ATAU dari hardcoded fallback
+    const activeFormatNomor = dynamicTpl?.format_nomor || HARDCODED_FORMAT[ket] || "";
 
     const activeFields = dynamicTpl 
         ? dynamicTpl.formFields.map(f => f.name) 
@@ -118,12 +127,12 @@ export default function BuatSurat() {
         : formConfig[ket];
 
     useEffect(() => {
-        if (!editId && dynamicTpl?.format_nomor) {
+        if (!editId && activeFormatNomor) {
             setUseAutoNumber(true);
         } else {
             setUseAutoNumber(false);
         }
-    }, [dynamicTpl, editId]);
+    }, [activeFormatNomor, editId]);
 
     useEffect(() => {
         if (!docId) return;
@@ -221,7 +230,7 @@ export default function BuatSurat() {
             }
             
             // Logika Penomoran Surat Otomatis menggunakan Transaksi Firestore
-            if (useAutoNumber && !editId && dynamicTpl?.format_nomor) {
+            if (useAutoNumber && !editId && activeFormatNomor) {
                 // Gunakan tanggal dari form jika ada, jika tidak gunakan waktu hari ini
                 const refDate = formFields.tanggal_surat ? new Date(formFields.tanggal_surat) : new Date();
                 const year = refDate.getFullYear();
@@ -239,7 +248,7 @@ export default function BuatSurat() {
                     
                     const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
                     
-                    let format = dynamicTpl.format_nomor;
+                    let format = activeFormatNomor;
                     format = format.replace(/\{\{NOMOR\}\}/g, seq);
                     format = format.replace(/\{\{TAHUN\}\}/g, year);
                     format = format.replace(/\{\{BULAN\}\}/g, month);
@@ -329,11 +338,11 @@ export default function BuatSurat() {
         const field = FIELD_MASTER[fieldKey];
         if (!field) return null;
         
-        if (fieldKey === 'no_surat' && dynamicTpl?.format_nomor && !editId) {
-            const hasInputTag = dynamicTpl.format_nomor.includes('{{INPUT}}');
+        if (fieldKey === 'no_surat' && activeFormatNomor && !editId) {
+            const hasInputTag = activeFormatNomor.includes('{{INPUT}}');
             
             // Generate live preview string
-            let previewValue = dynamicTpl.format_nomor;
+            let previewValue = activeFormatNomor;
             const refDatePreview = formFields.tanggal_surat ? new Date(formFields.tanggal_surat) : new Date();
             const yearPrev = refDatePreview.getFullYear();
             const monthPrev = refDatePreview.getMonth() + 1;
